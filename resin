@@ -1,0 +1,7 @@
+#!/usr/bin/env node
+var resin = require('./index');
+resin({src: process.argv[2]})
+  .on('error', function(err) {
+    console.warn('error:', err);
+  })
+  .pipe(process.stdout);

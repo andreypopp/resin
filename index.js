@@ -1,5 +1,5 @@
-var rework = require('rework'),
-    imprt = require('rework-npm'),
+var xcss = require('xcss'),
+    rework = require('rework'),
     dedupe = require('rework-deduplicate'),
     vars = require('rework-vars'),
     inherit = require('rework-inherit'),
@@ -23,18 +23,15 @@ module.exports = function(options) {
         throw new Error("Sorry, I couldn't find an input file. Did you supply one?");
     }
 
-    output = rework(read(src, 'utf8'))
-        .use(imprt())
-        .use(vars())
-        .use(dedupe())
-        .use(rework.colors())
-        .use(inherit())
-        .use(rework.url(function(url) {
-          return urlString + url;
-        }))
-        .use(namespace(ns))
-        .use(autoprefixer(browsers).rework)
-        .toString({sourcemap: debug}).replace(/(\/\*\*[\s\S]*?(license)[\s\S]*?\*\/)([\s\t]*(\r\n|\n|\r))/gi, '');
+    var transforms = [
+      vars(),
+      dedupe(),
+      rework.colors(),
+      inherit(),
+      rework.url(function(url) {return urlString + url;}),
+      namespace(ns),
+      autoprefixer(browsers).rework
+    ]
 
-    return license + output;
+    return xcss(src, {transforms: transforms, debug: debug});
 };
